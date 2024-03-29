@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block register %}
+<form class="d-flex">
+          <input class="form-control me-4" style="font-size: 23px" type="search" placeholder="Найти" aria-label="Search">
+          <button class="btn btn-outline-success" style="border-color: #4B371C; color: #4B371C;" type="submit">Найти</button>
+</form>
+{% endblock %}
+
+{% block body %}
+<section class="menu" id="menu">
+  <div class="container">
+  <div class="heading3">Menu</div>
+</div>
+  <div class="container" id="container2">
+  <div class="row row-horizont gy-5">
+    {% for el in data %}
+    <div class="col-4">
+      <div class="card" >
+        <img src="{{el['img_path']}}" class="card-img-top" alt="law">
+        <div class="card-body">
+          <div class="star text-center">
+            <i class="fa-regular fa-star"></i>
+
+          </div>
+          <h3>{{el['name']}}</h3>
+          <p>{{el['price']}} рублей<span><i class="fa-solid fa-cart-shopping"></i></span></p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

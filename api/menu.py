@@ -55,6 +55,7 @@ class MenuListResource(Resource):
                             item.to_dict(only=('id', 'name', 'category', 'description', 'weight', 'price', 'img_path'))
                             for item in menu]})
 
+
     def post(self):
         args = parser.parse_args()
         session = db_session.create_session()

@@ -1,14 +1,21 @@
 from flask import Flask, make_response, jsonify, render_template
 from flask_restful import Api
+from flask_login import LoginManager
+import requests
+
 
 from api import menu as menu_api
 from api import orders as order_api
 from api import users as users_api
 from data import db_session
 
+
+
 app = Flask(__name__)
 api = Api(app)
 app.config['SECRET_KEY'] = 'velcake_secret_key'
+
+login_manager = LoginManager(app)
 
 
 @app.errorhandler(404)
@@ -31,9 +38,25 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/create')
-def create():
-    return render_template('create.html')
+@app.route('/gallery')
+def photo():
+    return render_template('Gallery.html')
+
+
+@app.route('/reg')
+def reg():
+    return render_template('reg.html')
+
+
+@app.route('/regist')
+def regist():
+    return render_template('regist.html')
+
+
+@app.route('/menu')
+def menu1():
+    items = requests.get('http://127.0.0.1:8080/api/menu').json()['menu']
+    return render_template('menu.html', data=items)
 
 
 def api_connect():
