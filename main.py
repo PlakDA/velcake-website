@@ -1,6 +1,5 @@
 from flask import Flask, make_response, jsonify, render_template
 from flask_restful import Api
-from flask_login import LoginManager
 import requests
 
 
@@ -14,8 +13,6 @@ from data import db_session
 app = Flask(__name__)
 api = Api(app)
 app.config['SECRET_KEY'] = 'velcake_secret_key'
-
-login_manager = LoginManager(app)
 
 
 @app.errorhandler(404)
