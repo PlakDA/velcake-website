@@ -1,6 +1,6 @@
 import requests
 from flask import Flask, make_response, jsonify, render_template, redirect
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
 
 from api import menu as menu_api
@@ -21,7 +21,7 @@ app.config['SECRET_KEY'] = 'velcake_secret_key'
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return db_sess.get(User, user_id)
 
 
 @app.errorhandler(404)
@@ -32,6 +32,13 @@ def not_found(error):
 @app.errorhandler(400)
 def bad_request(_):
     return make_response(jsonify({'error': 'Bad Request'}), 400)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 @app.route('/')

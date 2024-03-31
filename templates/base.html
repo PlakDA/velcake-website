@@ -32,7 +32,11 @@
           </li>
 
         </ul>
+        {% if current_user.is_authenticated%}
+          <a class="navbar-brand" style="color: white; font-size: 27px; padding-bottom: 3px;" href="/logout">{{ current_user.login }}</a>
+        {% else %}
           {% block register %}{% endblock %}
+        {% endif %}
       </div>
     </div>
   </nav>
