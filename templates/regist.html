@@ -13,45 +13,58 @@
 <body class="text-center">
 <div class="content"
      style="width: 100%; height: 100vh; background-color: #fefefe; background-repeat: no-repeat; background-size: cover; background-position: bottom right; background-image: url(static/images/reg_background.png); background-size: auto;">
-    <form class="form-signin" action="" method="post" style="margin-left: auto; margin-right: auto; max-width: 300px;">
-        {{ form.hidden_tag() }}
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-md-3">
+                <form class="form-signin" action="" method="post">
+                    {{ form.hidden_tag() }}
 
-        <h3>Зарегистрироваться</h3>
+                    <h3 class="mb-4">Регистрация</h3>
 
-        <label style="font-size: 18px;">{{ form.login.label }}</label><br>
-        {{ form.login(class="form-control") }}<br>
-        {% for login in form.login.errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
+                    <div class="form-floating mb-2">
+                        {{ form.login(class="form-control", id="floatingInput", placeholder="Логин") }}
+                        {% for error in form.login.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Логин</label>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        {{ form.password(class="form-control", id="floatingPassword", type="password",
+                        placeholder="Пароль") }}
+                        {% for error in form.password.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingPassword">Пароль</label>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        {{ form.org_code(class="form-control", id="floatingPassword", type="password",
+                        placeholder="Код организации") }}
+                        {% for error in form.org_code.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingPassword">Код организации</label>
+                    </div>
+
+                    {{ form.submit(type="submit", class="btn btn-primary w-100") }}
+
+                    {% if message %}
+                    <div class="alert alert-warning my-3" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                </form>
+                <br>
+                <p class="text">Вернуться на <a class="link-opacity-100" href="/">главную страницу</a></p>
+            </div>
         </div>
-        {% endfor %}
-
-        <label style="font-size: 18px;">{{ form.password.label }}</label><br>
-        {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
-        {% endfor %}
-
-        <label style="font-size: 18px;">{{ form.org_code.label }}</label><br>
-        {{ form.org_code(class="form-control", type="password") }}<br>
-        {% for error in form.org_code.errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
-        {% endfor %}
-
-        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        {% if message %}
-        <div class="alert alert-primary" role="alert">
-            {{ message }}
-        </div>
-        {% endif %}
-    </form>
-
-    <div style="margin-left: auto; margin-right: auto; max-width: 400px;">
-        <p class="text">Вернуться на <a class="link-opacity-100" href="/">главную страницу</a></p>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"

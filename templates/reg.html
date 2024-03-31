@@ -17,15 +17,14 @@
     <div class="container-fluid h-100">
         <div class="row justify-content-center align-items-center h-100">
             <div class="col-md-3">
-                <form class="form-signin" action="" method="post"
-                >
+                <form class="form-signin" action="" method="post">
 
                     <h1 class="mb-4">Авторизация</h1>
                     {{ form.hidden_tag() }}
 
 
                     <div class="form-floating mb-2">
-                        {{ form.login(class="form-control", id="floatingInput", placeholder="name@example.com") }}
+                        {{ form.login(class="form-control", id="floatingInput", placeholder="Логин") }}
                         {% for error in form.login.errors %}
                         <div class="alert alert-danger" role="alert">
                             {{ error }}
@@ -36,7 +35,7 @@
 
                     <div class="form-floating mb-4">
                         {{ form.password(class="form-control", id="floatingPassword", type="password",
-                        placeholder="Password") }}
+                        placeholder="Пароль") }}
                         {% for error in form.password.errors %}
                         <div class="alert alert-danger" role="alert">
                             {{ error }}
