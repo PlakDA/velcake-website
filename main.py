@@ -1,5 +1,8 @@
+import os.path
+
 import requests
 from flask import Flask, make_response, jsonify, render_template, redirect
+from flask import request as flask_request
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
 
@@ -8,6 +11,7 @@ from api import orders as order_api
 from api import users as users_api
 from data import db_session
 from data.users import User
+from forms.addmenu import AddMenuForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
 
@@ -83,6 +87,23 @@ def regist():
 def menu1():
     items = requests.get('http://127.0.0.1:8080/api/menu').json()['menu']
     return render_template('menu.html', data=items)
+
+
+@app.route('/addmenu', methods=['GET', 'POST'])
+@login_required
+def addmenu():
+    form = AddMenuForm()
+    if form.validate_on_submit():
+        feature_name = str(requests.get('http://127.0.0.1:8080/api/menu').json()["menu"][-1]["id"] + 1) + '.png'
+        requests.post('http://127.0.0.1:8080/api/menu', json={"name": form.name.data,
+                                                          "category": form.category.data,
+                                                          "description": form.description.data,
+                                                          "weight": float(form.weight.data),
+                                                          "price": form.price.data,
+                                                          "img_path": f'static/images/{feature_name}'})
+        form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{feature_name}'))
+        return redirect('/')
+    return render_template('addmenu.html', form=form)
 
 
 def api_connect():

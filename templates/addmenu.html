@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>кафе "Velcake"</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body class="text-center">
+<div class="content"
+     style="width: 100%; height: 100vh; background-color: #f9cf8b; background-repeat: no-repeat; background-size: cover; background-position: bottom right; background-image: url(static/images/login_cat.png); background-size: auto;">
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-md-3">
+                <form class="form-signin" action="" method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <h3 class="mb-4">Добавление новой позиции в меню</h3>
+
+                    <div class="form-floating mb-2">
+                        {{ form.name(class="form-control", id="floatingInput", placeholder="Название") }}
+                        {% for error in form.name.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Название</label>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        {{ form.category(class="form-control", id="floatingSelect", placeholder="Категория") }}
+                        {% for error in form.category.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingSelect">Категория</label>
+                    </div>
+
+                   <div class="form-floating mb-2">
+                        {{ form.description(class="form-control", id="floatingTextarea2", placeholder="Описание", style="height: 100px") }}
+                        {% for error in form.description.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingTextarea2">Описание</label>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        {{ form.weight(class="form-control", id="floatingInput", placeholder="100") }}
+                        {% for error in form.weight.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Вес / Объём</label>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        {{ form.price(class="form-control", id="floatingInput", placeholder="100") }}
+                        {% for error in form.price.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Цена</label>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        {{ form.img_file(class="form-control", id="floatingInput") }}
+                        {% for error in form.img_file.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Картинка</label>
+                    </div>
+
+                    {{ form.submit(type="submit", class="btn btn-primary w-100") }}
+
+                    {% if message %}
+                    <div class="alert alert-warning my-3" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                </form>
+                <br>
+                <p class="text">Вернуться на <a class="link-opacity-100" href="/">главную страницу</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+</html>
