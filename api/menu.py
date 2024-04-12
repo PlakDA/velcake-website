@@ -40,7 +40,6 @@ class MenuResource(Resource):
         dish.description = args['description'] if args['description'] else dish.description
         dish.weight = args['weight'] if args['weight'] else dish.weight
         dish.price = args['price'] if args['price'] else dish.price
-        dish.img_path = args['img_path'] if args['img_path'] else dish.img_path
         session.add(dish)
         session.commit()
         return jsonify({'successful': 'OK'})
@@ -54,7 +53,6 @@ class MenuListResource(Resource):
                         'menu': [
                             item.to_dict(only=('id', 'name', 'category', 'description', 'weight', 'price', 'img_path'))
                             for item in menu]})
-
 
     def post(self):
         args = parser.parse_args()
