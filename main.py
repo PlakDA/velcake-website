@@ -1,7 +1,7 @@
 import os.path
 
 import requests
-from flask import Flask, make_response, jsonify, render_template, redirect
+from flask import Flask, make_response, jsonify, render_template, redirect, request, Blueprint
 from flask import request as flask_request
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
@@ -11,6 +11,7 @@ from api import orders as order_api
 from api import users as users_api
 from data import db_session
 from data.users import User
+from data.menu import Dish
 from forms.addmenu import AddMenuForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
@@ -79,13 +80,28 @@ def reg():
 def regist():
     form = RegisterForm()
     if form.validate_on_submit():
-        pass
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.login == form.login.data).first():
+            return render_template('regist.html',
+                                   form=form,
+                                   message="Такой логин уже есть")
+        else:
+                user = User(
+                    login=form.login.data,
+                    password=form.password.data,
+                    name=form.org_code.data
+                )
+                user.set_password(form.password.data)
+                db_sess.add(user)
+                db_sess.commit()
+                return redirect('/reg')
     return render_template('regist.html', form=form)
 
 
 @app.route('/menu')
 def menu1():
     items = requests.get('http://127.0.0.1:8080/api/menu').json()['menu']
+
     return render_template('menu.html', data=items)
 
 
@@ -104,6 +120,35 @@ def addmenu():
         form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{feature_name}'))
         return redirect('/')
     return render_template('addmenu.html', form=form)
+
+blueprint = Blueprint(
+    'main',
+    __name__,
+    template_folder='templates')
+
+
+@blueprint.route('/api/menu/1', methods=['PUT'])
+def put_dish(dish_id):
+    if not request.json:
+        return jsonify({'error': 'Empty request'})
+    db_sess = db_session.create_session()
+    dish = db_sess.query(Dish).get(dish_id)
+    if not dish:
+        return jsonify({'error': 'Bad request'})
+    if 'name' in request.json:
+        dish.name = request.json['name']
+    if 'category' in request.json:
+        dish.category = request.json['category']
+    if 'description' in request.json:
+        dish.description = request.json['description']
+    if 'weight' in request.json:
+        dish.weight = request.json['weight']
+    if 'price' in request.json:
+        dish.price = request.json['price']
+    if 'img_path' in request.json:
+        dish.img_path = request.json['img_path']
+    db_sess.commit()
+    return jsonify({'success': 'OK'})
 
 
 def api_connect():
