@@ -21,13 +21,12 @@
         <div class="card-body">
           <div class="star text-center">
             <i class="fa-regular fa-star"></i>
-
           </div>
           <h3>{{el['name']}}</h3>
           <p>{{el['price']}} рублей<span><i class="fa-solid fa-cart-shopping"></i></span></p>
           {% if current_user.is_authenticated %}
-            <a class="btn btn-dark" href="/api/menu/<int:dish_id>" role="button">Редактировать</a>
-            <a class="btn btn-primary" href="#" role="button">Удалить</a>
+            <a class="btn btn-dark" href="/menuedit/{{ el['id'] }}" role="button">Редактировать</a>
+            <a class="btn btn-outline-danger" href="/menudelete/{{ el['id'] }}" role="button">Удалить</a>
           {% endif %}
         </div>
       </div>

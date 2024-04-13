@@ -1,8 +1,7 @@
 import os.path
 
 import requests
-from flask import Flask, make_response, jsonify, render_template, redirect, request, Blueprint
-from flask import request as flask_request
+from flask import Flask, make_response, jsonify, render_template, redirect, request
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
 
@@ -11,7 +10,6 @@ from api import orders as order_api
 from api import users as users_api
 from data import db_session
 from data.users import User
-from data.menu import Dish
 from forms.addmenu import AddMenuForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
@@ -86,69 +84,72 @@ def regist():
                                    form=form,
                                    message="Такой логин уже есть")
         else:
-                user = User(
-                    login=form.login.data,
-                    password=form.password.data,
-                    name=form.org_code.data
-                )
-                user.set_password(form.password.data)
-                db_sess.add(user)
-                db_sess.commit()
-                return redirect('/reg')
+            user = User(
+                login=form.login.data,
+                password=form.password.data,
+                name=form.org_code.data
+            )
+            user.set_password(form.password.data)
+            db_sess.add(user)
+            db_sess.commit()
+            return redirect('/reg')
     return render_template('regist.html', form=form)
 
 
 @app.route('/menu')
 def menu1():
     items = requests.get('http://127.0.0.1:8080/api/menu').json()['menu']
-
     return render_template('menu.html', data=items)
 
 
-@app.route('/addmenu', methods=['GET', 'POST'])
+@app.route('/menuadd', methods=['GET', 'POST'])
 @login_required
 def addmenu():
     form = AddMenuForm()
     if form.validate_on_submit():
         feature_name = str(requests.get('http://127.0.0.1:8080/api/menu').json()["menu"][-1]["id"] + 1) + '.png'
         requests.post('http://127.0.0.1:8080/api/menu', json={"name": form.name.data,
-                                                          "category": form.category.data,
-                                                          "description": form.description.data,
-                                                          "weight": float(form.weight.data),
-                                                          "price": form.price.data,
-                                                          "img_path": f'static/images/{feature_name}'})
+                                                              "category": form.category.data,
+                                                              "description": form.description.data,
+                                                              "weight": float(form.weight.data),
+                                                              "price": form.price.data,
+                                                              "img_path": f'static/images/{feature_name}'})
         form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{feature_name}'))
-        return redirect('/')
+        print(form.img_file.data)
+        return redirect('/menu')
     return render_template('addmenu.html', form=form)
 
-blueprint = Blueprint(
-    'main',
-    __name__,
-    template_folder='templates')
+
+@app.route('/menudelete/<int:id>')
+@login_required
+def menudelete(id):
+    requests.delete(f'http://127.0.0.1:8080/api/menu/{id}')
+    os.remove(f'static/images/{id}.png')
+    return redirect('/menu')
 
 
-@blueprint.route('/api/menu/1', methods=['PUT'])
-def put_dish(dish_id):
-    if not request.json:
-        return jsonify({'error': 'Empty request'})
-    db_sess = db_session.create_session()
-    dish = db_sess.query(Dish).get(dish_id)
-    if not dish:
-        return jsonify({'error': 'Bad request'})
-    if 'name' in request.json:
-        dish.name = request.json['name']
-    if 'category' in request.json:
-        dish.category = request.json['category']
-    if 'description' in request.json:
-        dish.description = request.json['description']
-    if 'weight' in request.json:
-        dish.weight = request.json['weight']
-    if 'price' in request.json:
-        dish.price = request.json['price']
-    if 'img_path' in request.json:
-        dish.img_path = request.json['img_path']
-    db_sess.commit()
-    return jsonify({'success': 'OK'})
+@app.route('/menuedit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def menuedit(id):
+    form = AddMenuForm()
+    if request.method == 'GET':
+        dish = requests.get(f'http://127.0.0.1:8080/api/menu/{id}').json()
+        form.name.data = dish["dish"]["name"]
+        form.category.data = dish["dish"]["category"]
+        form.description.data = dish["dish"]["description"]
+        form.weight.data = dish["dish"]["weight"]
+        form.price.data = dish["dish"]["price"]
+        return render_template('menuedit.html', form=form)
+    if request.method == 'POST':
+        requests.put(f'http://127.0.0.1:8080/api/menu/{id}', json={
+            "name": form.name.data,
+            "category": form.category.data,
+            "description": form.description.data,
+            "weight": float(form.weight.data),
+            "price": form.price.data
+        })
+
+        return redirect('/menu')
 
 
 def api_connect():
