@@ -118,7 +118,7 @@ def menudelete(id):
     return redirect('/menu')
 
 
-@app.route('/menuedit/<int:id>', methods=['GET', 'POST'])
+@app.route('/menu/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def menuedit(id):
     form = AddMenuForm()

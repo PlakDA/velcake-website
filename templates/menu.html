@@ -25,7 +25,7 @@
           <h3>{{el['name']}}</h3>
           <p>{{el['price']}} рублей<span><i class="fa-solid fa-cart-shopping"></i></span></p>
           {% if current_user.is_authenticated %}
-            <a class="btn btn-dark" href="/men/uedit/{{ el['id'] }}" role="button">Редактировать</a>
+            <a class="btn btn-dark" href="/menu/edit/{{ el['id'] }}" role="button">Редактировать</a>
             <a class="btn btn-outline-danger" href="/menu/delete/{{ el['id'] }}" role="button">Удалить</a>
           {% endif %}
         </div>
