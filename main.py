@@ -78,21 +78,11 @@ def reg():
 def regist():
     form = RegisterForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.login == form.login.data).first():
-            return render_template('regist.html',
-                                   form=form,
-                                   message="Такой логин уже есть")
-        else:
-            user = User(
-                login=form.login.data,
-                password=form.password.data,
-                name=form.org_code.data
-            )
-            user.set_password(form.password.data)
-            db_sess.add(user)
-            db_sess.commit()
-            return redirect('/reg')
+        if form.org_code.data != 'org_code':
+            return render_template('regist.html', form=form, message='Неправильный код организации')
+        requests.post('http://127.0.0.1:8080/api/users',
+                      json={"login": form.login.data, "password": form.password.data})
+        return redirect('/reg')
     return render_template('regist.html', form=form)
 
 
@@ -102,7 +92,7 @@ def menu1():
     return render_template('menu.html', data=items)
 
 
-@app.route('/menuadd', methods=['GET', 'POST'])
+@app.route('/menu/add', methods=['GET', 'POST'])
 @login_required
 def addmenu():
     form = AddMenuForm()
@@ -120,7 +110,7 @@ def addmenu():
     return render_template('addmenu.html', form=form)
 
 
-@app.route('/menudelete/<int:id>')
+@app.route('/menu/delete/<int:id>')
 @login_required
 def menudelete(id):
     requests.delete(f'http://127.0.0.1:8080/api/menu/{id}')

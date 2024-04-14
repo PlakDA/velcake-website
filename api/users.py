@@ -20,7 +20,7 @@ class UserResource(Resource):
         session = db_session.create_session()
         user = session.get(User, user_id)
         return jsonify({'successful': 'OK',
-                        'user': user.to_dict(only=('id', 'login', 'password', 'name'))})
+                        'user': user.to_dict(only=('id', 'login', 'password'))})
 
     def delete(self, user_id):
         abort_if_user_not_found(user_id)
@@ -37,7 +37,6 @@ class UserResource(Resource):
         user = session.get(User, user_id)
         user.login = args['login'] if args['login'] else user.login
         user.password = generate_password_hash(args['password']) if args['password'] else user.password
-        user.name = args['name'] if args['name'] else user.name
         session.add(user)
         session.commit()
         return jsonify({'successful': 'OK'})
@@ -48,7 +47,7 @@ class UserListResource(Resource):
         session = db_session.create_session()
         users = session.query(User).all()
         return jsonify({'successful': 'OK',
-                        'users': [item.to_dict(only=('id', 'login', 'password', 'name'))
+                        'users': [item.to_dict(only=('id', 'login', 'password'))
                                   for item in users]})
 
     def post(self):
@@ -56,8 +55,7 @@ class UserListResource(Resource):
         session = db_session.create_session()
         user = User(
             login=args['login'],
-            password=generate_password_hash(args['password']),
-            name=args['name']
+            password=generate_password_hash(args['password'])
         )
         session.add(user)
         session.commit()
