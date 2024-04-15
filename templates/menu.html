@@ -23,7 +23,8 @@
             <i class="fa-regular fa-star"></i>
           </div>
           <h3>{{el['name']}}</h3>
-          <p>{{el['price']}} рублей<span><i class="fa-solid fa-cart-shopping"></i></span></p>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ el["category"] }}</h6>
+          <h4>{{el['price']}} рублей</h4>
           {% if current_user.is_authenticated %}
             <a class="btn btn-dark" href="/menu/edit/{{ el['id'] }}" role="button">Редактировать</a>
             <a class="btn btn-outline-danger" href="/menu/delete/{{ el['id'] }}" role="button">Удалить</a>

@@ -130,6 +130,7 @@ def menuedit(id):
         form.weight.data = dish["dish"]["weight"]
         form.price.data = dish["dish"]["price"]
         return render_template('menuedit.html', form=form)
+
     if request.method == 'POST':
         requests.put(f'http://127.0.0.1:8080/api/menu/{id}', json={
             "name": form.name.data,
@@ -138,7 +139,8 @@ def menuedit(id):
             "weight": float(form.weight.data),
             "price": form.price.data
         })
-
+        if form.img_file.data:
+            form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{id}.png'))
         return redirect('/menu')
 
 

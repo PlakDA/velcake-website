@@ -12,14 +12,15 @@
 
 <body class="text-center">
 <div class="content"
-     style="width: 100%; height: 100vh; background-color: #f9cf8b; background-repeat: no-repeat; background-size: cover; background-position: bottom right; background-image: 'url(static/images/login_cat.png)'; background-size: auto;">
+     style="width: 100%; height: 100vh; background-color: #f9cf8b; background-repeat: no-repeat; background-size: cover; background-position: bottom right; background-image: url(../../static/images/login_cat.png); background-size: auto;">
     <div class="container-fluid h-100">
         <div class="row justify-content-center align-items-center h-100">
             <div class="col-md-3">
                 <form class="form-signin" action="" method="post" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
 
-                    <h3 class="mb-4">Добавление новой позиции в меню</h3>
+                    <h5><span class="badge rounded-pill text-bg-primary">Редактирование</span></h5>
+                    <h3 class="mb-4">{{ form.name.data }}</h3>
 
                     <div class="form-floating mb-2">
                         {{ form.name(class="form-control", id="floatingInput", placeholder="Название") }}
