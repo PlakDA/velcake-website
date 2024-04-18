@@ -19,7 +19,7 @@ class OrderResource(Resource):
         session = db_session.create_session()
         order = session.get(Order, order_id)
         return jsonify({'successful': 'OK',
-                        'order': order.to_dict(only=('id', 'status', 'menus', 'total', 'client_info'))})
+                        'order': order.to_dict(only=('id', 'status', 'menus', 'total', 'client_info', 'time'))})
 
     def delete(self, order_id):
         abort_if_order_not_found(order_id)
@@ -38,6 +38,7 @@ class OrderResource(Resource):
         order.menus = args['menus'] if args['menus'] else order.menus
         order.total = args['total'] if args['total'] else order.total
         order.client_info = args['client_info'] if args['client_info'] else order.client_info
+        order.time = args['total'] if args['total'] else order.time
         session.add(order)
         session.commit()
         return jsonify({'successful': 'OK'})
@@ -48,7 +49,7 @@ class OrderListResource(Resource):
         session = db_session.create_session()
         orders = session.query(Order).all()
         return jsonify({'successful': 'OK',
-                        'orders': [item.to_dict(only=('id', 'status', 'menus', 'total', 'client_info'))
+                        'orders': [item.to_dict(only=('id', 'status', 'menus', 'total', 'client_info', 'time'))
                                    for item in orders]})
 
     def post(self):
@@ -58,7 +59,8 @@ class OrderListResource(Resource):
             status=args['status'],
             menus=args['menus'],
             total=args['total'],
-            client_info=args['client_info']
+            client_info=args['client_info'],
+            time = args['time']
         )
         session.add(order)
         session.commit()

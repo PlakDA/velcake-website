@@ -4,6 +4,7 @@ import requests
 from flask import Flask, make_response, jsonify, render_template, redirect, request
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
+import sqlite3
 
 from api import menu as menu_api
 from api import orders as order_api
@@ -11,6 +12,7 @@ from api import users as users_api
 from data import db_session
 from data.users import User
 from forms.addmenu import AddMenuForm
+from forms.additem import AddItemForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
 
@@ -19,6 +21,20 @@ api = Api(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'velcake_secret_key'
+
+def perform_search(query):
+    # Connect to the database
+    conn = sqlite3.connect('database.sqlite')
+    c = conn.cursor()
+
+    # Execute the search query
+    c.execute("SELECT * FROM menu WHERE name LIKE ?", (query,))
+    results = c.fetchall()
+
+    # Close the connection
+    conn.close()
+    print(results)
+    return results
 
 
 @login_manager.user_loader
@@ -108,6 +124,33 @@ def addmenu():
         print(form.img_file.data)
         return redirect('/menu')
     return render_template('addmenu.html', form=form)
+
+
+
+@app.route('/search/<query>', methods=['GET'])
+def search():
+    query = request.form['query']
+    print(query)
+    # Perform search and return results
+    results = perform_search(query)
+    print(results)
+    return render_template('results.html', query=query, results=results)
+
+
+
+@app.route('/orders/#', methods=['GET', 'POST'])
+@login_required
+def additem():
+    form = AddItemForm()
+    if form.validate_on_submit() :
+        requests.post('http://127.0.0.1:8080/api/orders', json={"status": form.status.data,
+                                                                "menus": form.menus.data,
+                                                                "total": form.total.data,
+                                                                "client_info": form.client_info.data,
+                                                                "time": form.time.data,
+                                                                })
+        return redirect('/menu')
+    return render_template('additem.html', form=form)
 
 
 @app.route('/menu/delete/<int:id>')
