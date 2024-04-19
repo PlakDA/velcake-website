@@ -1,18 +1,18 @@
 import os.path
+import sqlite3
 
 import requests
-from flask import Flask, make_response, jsonify, render_template, redirect, request
+from flask import Flask, make_response, jsonify, render_template, redirect, request, session
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import Api
-import sqlite3
 
 from api import menu as menu_api
 from api import orders as order_api
 from api import users as users_api
 from data import db_session
 from data.users import User
-from forms.addmenu import AddMenuForm
 from forms.additem import AddItemForm
+from forms.addmenu import AddMenuForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
 
@@ -21,6 +21,7 @@ api = Api(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'velcake_secret_key'
+
 
 def perform_search(query):
     # Connect to the database
@@ -57,6 +58,7 @@ def bad_request(_):
 @login_required
 def logout():
     logout_user()
+    session.clear()
     return redirect("/")
 
 
@@ -126,9 +128,61 @@ def addmenu():
     return render_template('addmenu.html', form=form)
 
 
+def formed_menus_list(menus=None):
+    if not menus:
+        menus = session.get('cart', [])
+
+    menus_list = list()
+    for id in set(menus):
+        dish = requests.get(f'http://127.0.0.1:8080/api/menu/{id}').json()
+        weight = dish["dish"]["weight"]
+
+        position_card = dict()
+        position_card['id'] = id
+        position_card['name'] = (
+            f'[{dish["dish"]["category"]}] {dish["dish"]["name"]} '
+            f'{int(weight) if weight > 10 else weight}{"г" if weight > 10 else "л"}')
+        position_card['price'] = dish["dish"]["price"]
+        position_card['count'] = menus.count(id)
+
+        menus_list.append(position_card)
+
+    return menus_list
+
+
+@app.route('/cart')
+@login_required
+def cart():
+    return render_template('cart.html', cart=formed_menus_list())
+
+
+@app.route('/cart/add/<int:id>')
+@login_required
+def cart_add(id):
+    session.modified = True
+    if 'cart' not in session:
+        session['cart'] = list()
+    session['cart'].append(id)
+    return redirect(request.referrer)
+
+
+@app.route('/cart/remove/<int:id>')
+@login_required
+def cart_remove(id):
+    session.modified = True
+    session['cart'].remove(id)
+    return redirect(request.referrer)
+
+
+@app.route('/cart/clear')
+@login_required
+def cart_clear():
+    session.pop('cart', None)
+    return redirect('/cart')
+
 
 @app.route('/search/<query>', methods=['GET'])
-def search():
+def search(query):
     query = request.form['query']
     print(query)
     # Perform search and return results
@@ -137,20 +191,27 @@ def search():
     return render_template('results.html', query=query, results=results)
 
 
-
-@app.route('/orders/#', methods=['GET', 'POST'])
+@app.route('/orders/add', methods=['GET', 'POST'])
 @login_required
 def additem():
     form = AddItemForm()
-    if form.validate_on_submit() :
+    if form.validate_on_submit():
         requests.post('http://127.0.0.1:8080/api/orders', json={"status": form.status.data,
-                                                                "menus": form.menus.data,
-                                                                "total": form.total.data,
-                                                                "client_info": form.client_info.data,
-                                                                "time": form.time.data,
-                                                                })
+                                                           "menus": ' '.join(map(str, session.get('cart'))),
+                                                           "total": form.total.data,
+                                                           "client_info": form.client_info.data,
+                                                           "date": str(form.date.data)})
+        session.pop('cart', None)
         return redirect('/menu')
-    return render_template('additem.html', form=form)
+
+    total = 0
+    order_description = 'Название ----- Количество ----- Итоговая цена\n\n'
+    for el in formed_menus_list():
+        order_description += f'{el["name"]} ----- {el["count"]} ----- {el["price"]}р\n'
+        total += el['price']
+    form.total.data = total
+
+    return render_template('additem.html', form=form, order_description=order_description)
 
 
 @app.route('/menu/delete/<int:id>')

@@ -41,8 +41,11 @@
                         <h6 class="card-subtitle mb-2 text-body-secondary">{{ el["category"] }}</h6>
                         <h4>{{el['price']}} рублей</h4>
                         {% if current_user.is_authenticated %}
-                        <a class="btn btn-dark" href="/menu/edit/{{ el['id'] }}" role="button">Редактировать</a>
-                        <a class="btn btn-outline-danger" href="/menu/delete/{{ el['id'] }}" role="button">Удалить</a>
+                        <div class="btn-group-vertical mt-4" role="group" aria-label="Vertical button group">
+                            <a class="btn btn-success" href="/cart/add/{{ el['id'] }}" role="button">Добавить в предзаказ</a>
+                            <a class="btn btn-dark" href="/menu/edit/{{ el['id'] }}" role="button">Редактировать</a>
+                            <a class="btn btn-outline-danger" href="/menu/delete/{{ el['id'] }}" role="button">Удалить</a>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
