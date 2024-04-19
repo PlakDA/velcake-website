@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<a class="btn btn-warning m-3" href="/cart/clear">Очистить предзаказ</a>
+{% if cart %}
+<a class="btn btn-success m-3" href="/orders/add">Создать заказ</a>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Название</th>
+        <th scope="col">Количество</th>
+        <th scope="col">Итоговая сумма</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for el in cart %}
+    <tr>
+        <td>{{ el["name"] }}</td>
+        <td>
+            <a class="btn btn-outline-primary btn-sm" href="/cart/remove/{{ el["id"] }}">-</a>
+            {{ el["count"] }}
+            <a class="btn btn-outline-primary btn-sm" href="/cart/add/{{ el["id"] }}">+</a>
+        </td>
+        <td>{{ el["count"] * el["price"] }}</td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}
