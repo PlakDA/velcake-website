@@ -15,11 +15,17 @@
      style="width: 100%; height: 100vh; background-color: #f9cf8b; background-repeat: no-repeat; background-size: cover; background-position: bottom right; background-image: url(../static/images/white_fon.png); background-size: auto;">
     <div class="container-fluid h-100">
         <div class="row justify-content-center align-items-center h-100">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <form class="form-signin" action="" method="post" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
 
                     <h3 class="mb-4">Добавление нового заказа</h3>
+
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2Disabled"
+                                  style="height: 100px" disabled>{{order_description}}</textarea>
+                        <label for="floatingTextarea2Disabled">Заказ</label>
+                    </div>
 
                     <div class="form-floating mb-2">
                         {{ form.status(class="form-control", id="floatingInput", placeholder="Состояние") }}
@@ -28,21 +34,8 @@
                             {{ error }}
                         </div>
                         {% endfor %}
-                        <label for="floatingInput">Статус(Выдан/В процессе/Готово)</label>
+                        <label for="floatingInput">Статус</label>
                     </div>
-
-
-
-                   <div class="form-floating mb-2">
-                        {{ form.menus(class="form-control", id="floatingTextarea2", placeholder="Описание", style="height: 100px") }}
-                        {% for error in form.menus.errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                        {% endfor %}
-                        <label for="floatingTextarea2">Заказанные блюда</label>
-                    </div>
-
 
                     <div class="form-floating mb-2">
                         {{ form.total(class="form-control", id="floatingInput", placeholder="100") }}
@@ -55,7 +48,18 @@
                     </div>
 
                     <div class="form-floating mb-2">
-                        {{ form.client_info(class="form-control", id="floatingTextarea2", placeholder="Информация о клиенте", style="height: 100px") }}
+                        {{ form.date(class="form-control", id="floatingInput", placeholder="100") }}
+                        {% for error in form.date.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        <label for="floatingInput">Дата выдачи</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{ form.client_info(class="form-control", id="floatingTextarea2", placeholder="Информация о
+                        клиенте", style="height: 100px") }}
                         {% for error in form.client_info.errors %}
                         <div class="alert alert-danger" role="alert">
                             {{ error }}
@@ -74,7 +78,8 @@
                     {% endif %}
                 </form>
                 <br>
-                <p class="text">Вернуться на <a class="link-opacity-100" href="/">главную страницу</a></p>
+                <p class="text">Вернуться на <a class="link-opacity-100" href="/cart">страницу предзаказа</a><br>
+                    Вернуться на <a class="link-opacity-100" href="/">главную страницу</a></p>
             </div>
         </div>
     </div>
