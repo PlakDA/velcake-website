@@ -4,5 +4,26 @@
  </div>
 {% endblock %}
 {% block body %}
-<a class="btn btn-dark" href="/additem" role="button">Заказать</a>
+<section class="photo" id="photo">
+ <div class="container" style="margin-bottom: 70px">
+        <div class="row row-horizont gy-5">
+            {% for el in items %}
+            <div class="col-4">
+                <div class="card">
+                    <img src="{{el['img_path']}}" class="card-img-top" alt="law">
+
+                        {% if current_user.is_authenticated %}
+                            <a class="btn btn-outline-danger" href="/photo/delete/{{ el['id'] }}" role="button">Удалить</a>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+</section>
+ {% if current_user.is_authenticated %}
+<a class="btn btn-dark" href="/photo/add" role="button">Добавить фото</a>
+{% endif %}
 {% endblock %}

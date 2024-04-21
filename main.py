@@ -9,10 +9,12 @@ from flask_restful import Api
 from api import menu as menu_api
 from api import orders as order_api
 from api import users as users_api
+from api import photo as photo_api
 from data import db_session
 from data.users import User
 from forms.additem import AddItemForm
 from forms.addmenu import AddMenuForm
+from forms.addphoto import AddPhotoForm
 from forms.login import LoginForm
 from forms.register import RegisterForm
 
@@ -72,9 +74,36 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/gallery')
+@app.route('/Gallery', methods=['GET'])
 def photo():
-    return render_template('Gallery.html')
+
+    items = requests.get('http://127.0.0.1:8080/api/photo').json()['photos']
+    print(items)
+    return render_template('Gallery.html', items=items)
+
+@app.route('/photo/add', methods=['GET', 'POST'])
+@login_required
+def addphoto():
+    form = AddPhotoForm()
+    if form.validate_on_submit():
+        print(requests.get('http://127.0.0.1:8080/api/photo').json())
+
+        feature_name = "photo" + str(requests.get('http://127.0.0.1:8080/api/photo').json()["photos"][-1]["id"] + 1) + '.png'
+        print(feature_name)
+        requests.post('http://127.0.0.1:8080/api/photo', json={
+                                                              "img_path": f'static/images/{feature_name}'})
+        form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{feature_name}'))
+
+        return redirect('/Gallery')
+    return render_template('addphoto.html', form=form)
+
+
+@app.route('/photo/delete/<int:id>')
+@login_required
+def photodelete(id):
+    requests.delete(f'http://127.0.0.1:8080/api/photo/{id}')
+    os.remove(f'static/images/{id}.png')
+    return redirect('/Gallery')
 
 
 @app.route('/reg', methods=['GET', 'POST'])
@@ -180,6 +209,36 @@ def cart_clear():
     session.pop('cart', None)
     return redirect('/cart')
 
+@app.route('/dashboard', methods=['GET'])
+@login_required
+def dashboard():
+
+    items = requests.get('http://127.0.0.1:8080/api/orders').json()['orders']
+    print(items)
+
+    for d in range(len(items)):
+        ret = {}
+        t = '   Название                 Количество\n\n'
+        s = ''
+        for i in items[d]['menus'].split():
+            print(i)
+            dish = requests.get(f'http://127.0.0.1:8080/api/menu/{int(i)}').json()['dish']['name']
+            if dish not in ret:
+                ret[dish] = 1
+            else:
+                ret[dish] += 1
+        for key, value in ret.items():
+            if value == 1:
+                w = 'штука'
+            elif value in [2, 3, 4]:
+                w = 'штуки'
+            else:
+                w = 'штук'
+            s += '    ' + str(key) + ' ' * (30 - len(str(key))) + str(value) + ' ' + w + '\n'
+        items[d]['menus'] = s
+        print(items[d]['menus'])
+    return render_template('dashboard.html', data=items, t=t)
+
 
 @app.route('/search/<query>', methods=['GET'])
 def search(query):
@@ -221,6 +280,34 @@ def menudelete(id):
     os.remove(f'static/images/{id}.png')
     return redirect('/menu')
 
+@app.route('/dashboard/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def dashedit(id):
+    form = AddItemForm()
+    if request.method == 'GET':
+        dish = requests.get(f'http://127.0.0.1:8080/api/orders/{id}').json()
+        print(dish)
+        form.status.data = dish["order"]["status"]
+        form.client_info.data = dish["order"]["client_info"]
+
+        return render_template('orderedit.html', form=form)
+
+    if request.method == 'POST':
+        requests.put(f'http://127.0.0.1:8080/api/orders/{id}', json={
+            "status": form.status.data,
+            "client_info": form.client_info.data,
+            "date": str(form.date.data)
+        })
+
+        return redirect('/dashboard')
+
+
+@app.route('/dashboard/delete/<int:id>')
+@login_required
+def dashdel(id):
+    requests.delete(f'http://127.0.0.1:8080/api/orders/{id}')
+    return redirect('/dashboard')
+
 
 @app.route('/menu/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -255,6 +342,8 @@ def api_connect():
     api.add_resource(order_api.OrderListResource, '/api/orders')
     api.add_resource(users_api.UserResource, '/api/users/<int:user_id>')
     api.add_resource(users_api.UserListResource, '/api/users')
+    api.add_resource(photo_api.PhotoResource, '/api/photo/<int:gallery_id>')
+    api.add_resource(photo_api.PhotoListResource, '/api/photo')
 
 
 if __name__ == '__main__':

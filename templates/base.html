@@ -28,7 +28,7 @@
             <a class="nav-link" style="color: white; font-size: 23px;" href="/menu">Меню</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" style="color: white; font-size: 23px;" href="/gallery">Фото</a>
+            <a class="nav-link" style="color: white; font-size: 23px;" href="/Gallery">Фото</a>
           </li>
           {% if current_user.is_authenticated%}
           <li class="nav-item">
@@ -36,6 +36,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" style="color: white; font-size: 23px;" href="/cart">Предзаказ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="color: white; font-size: 23px;" href="/dashboard">Заказы</a>
           </li>
           {% endif %}
 
