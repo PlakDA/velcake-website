@@ -14,6 +14,8 @@
         <li class="nav-item"><a class="nav-link" href="#Еда">Еда</a></li>
     </ul>
 
+    <a class="btn btn-outline-info m-2" href="/menu/add">Создать позицию</a>
+
     {% for global_category in ["Классика", "Авторский кофе", "Раф", "Молочные коктейли", "Некофе", "Чай", "Чай без чая",
     "Еда"] %}
 
@@ -23,12 +25,12 @@
             {% for el in data if el.category == global_category %}
             <div class="col-4">
                 <div class="card">
-                    <img src="{{el['img_path']}}" class="card-img-top" alt="law">
+                    <img src="{{el['img_path']}}" class="card-img-top" alt="law" style="height: 25rem;">
                     <div class="card-body">
                         <div class="star text-center">
                             <i class="fa-regular fa-star"></i>
                         </div>
-                        <h3>{{el['name']}}</h3>
+                        <h3>{{el['name']}} {{el['weight']}}{% if el['weight'] > 10%}г{% else %}л{% endif %}</h3>
                         <h6 class="card-subtitle mb-2 text-body-secondary">{{ el["category"] }}</h6>
                         <h4>{{el['price']}} рублей</h4>
                         {% if current_user.is_authenticated %}

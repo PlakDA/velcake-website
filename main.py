@@ -1,5 +1,5 @@
+import datetime
 import os.path
-import sqlite3
 
 import requests
 from flask import Flask, make_response, jsonify, render_template, redirect, request, session
@@ -8,8 +8,8 @@ from flask_restful import Api
 
 from api import menu as menu_api
 from api import orders as order_api
-from api import users as users_api
 from api import photo as photo_api
+from api import users as users_api
 from data import db_session
 from data.users import User
 from forms.additem import AddItemForm
@@ -25,21 +25,6 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'velcake_secret_key'
 
 
-def perform_search(query):
-    # Connect to the database
-    conn = sqlite3.connect('database.sqlite')
-    c = conn.cursor()
-
-    # Execute the search query
-    c.execute("SELECT * FROM menu WHERE name LIKE ?", (query,))
-    results = c.fetchall()
-
-    # Close the connection
-    conn.close()
-    print(results)
-    return results
-
-
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -48,7 +33,7 @@ def load_user(user_id):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return render_template('404.html')
 
 
 @app.errorhandler(400)
@@ -76,22 +61,19 @@ def about():
 
 @app.route('/Gallery', methods=['GET'])
 def photo():
-
     items = requests.get('http://127.0.0.1:8080/api/photo').json()['photos']
-    print(items)
     return render_template('Gallery.html', items=items)
+
 
 @app.route('/photo/add', methods=['GET', 'POST'])
 @login_required
 def addphoto():
     form = AddPhotoForm()
     if form.validate_on_submit():
-        print(requests.get('http://127.0.0.1:8080/api/photo').json())
-
-        feature_name = "photo" + str(requests.get('http://127.0.0.1:8080/api/photo').json()["photos"][-1]["id"] + 1) + '.png'
-        print(feature_name)
+        feature_name = "photo" + str(
+            requests.get('http://127.0.0.1:8080/api/photo').json()["photos"][-1]["id"] + 1) + '.png'
         requests.post('http://127.0.0.1:8080/api/photo', json={
-                                                              "img_path": f'static/images/{feature_name}'})
+            "img_path": f'static/images/{feature_name}'})
         form.img_file.data.save(os.path.join(os.getcwd(), f'static/images/{feature_name}'))
 
         return redirect('/Gallery')
@@ -102,7 +84,7 @@ def addphoto():
 @login_required
 def photodelete(id):
     requests.delete(f'http://127.0.0.1:8080/api/photo/{id}')
-    os.remove(f'static/images/{id}.png')
+    os.remove(f'static/images/photo{id}.png')
     return redirect('/Gallery')
 
 
@@ -209,19 +191,17 @@ def cart_clear():
     session.pop('cart', None)
     return redirect('/cart')
 
+
 @app.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard():
-
     items = requests.get('http://127.0.0.1:8080/api/orders').json()['orders']
-    print(items)
-
+    t = ''
     for d in range(len(items)):
         ret = {}
         t = '   Название                 Количество\n\n'
         s = ''
         for i in items[d]['menus'].split():
-            print(i)
             dish = requests.get(f'http://127.0.0.1:8080/api/menu/{int(i)}').json()['dish']['name']
             if dish not in ret:
                 ret[dish] = 1
@@ -236,18 +216,7 @@ def dashboard():
                 w = 'штук'
             s += '    ' + str(key) + ' ' * (30 - len(str(key))) + str(value) + ' ' + w + '\n'
         items[d]['menus'] = s
-        print(items[d]['menus'])
     return render_template('dashboard.html', data=items, t=t)
-
-
-@app.route('/search/<query>', methods=['GET'])
-def search(query):
-    query = request.form['query']
-    print(query)
-    # Perform search and return results
-    results = perform_search(query)
-    print(results)
-    return render_template('results.html', query=query, results=results)
 
 
 @app.route('/orders/add', methods=['GET', 'POST'])
@@ -255,13 +224,13 @@ def search(query):
 def additem():
     form = AddItemForm()
     if form.validate_on_submit():
-        requests.post('http:// 127.0.0.1:8080/api/orders', json={"status": form.status.data,
-                                                           "menus": ' '.join(map(str, session.get('cart'))),
-                                                           "total": form.total.data,
-                                                           "client_info": form.client_info.data,
-                                                           "date": str(form.date.data)})
+        requests.post('http://127.0.0.1:8080/api/orders', json={"status": form.status.data,
+                                                                 "menus": ' '.join(map(str, session.get('cart'))),
+                                                                 "total": form.total.data,
+                                                                 "client_info": form.client_info.data,
+                                                                 "date": str(form.date.data)})
         session.pop('cart', None)
-        return redirect('/menu')
+        return redirect('/dashboard')
 
     total = 0
     order_description = 'Название ----- Количество ----- Итоговая цена\n\n'
@@ -280,13 +249,13 @@ def menudelete(id):
     os.remove(f'static/images/{id}.png')
     return redirect('/menu')
 
+
 @app.route('/dashboard/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def dashedit(id):
     form = AddItemForm()
     if request.method == 'GET':
         dish = requests.get(f'http://127.0.0.1:8080/api/orders/{id}').json()
-        print(dish)
         form.status.data = dish["order"]["status"]
         form.client_info.data = dish["order"]["client_info"]
 

@@ -4,71 +4,73 @@
 {% block body %}
 <section class="dashboard" id="dashboard">
 
-<div class="container" style="margin-bottom: 70px">
+    <div class="container mt-4" style="margin-bottom: 70px">
         <div class="row row-horizont gy-2">
             {% for el in data %}
-            <div class="col-6">
+            <div class="col-6 mb-2">
                 {% if el['status'] in ['В работе'] %}
                 <div class="card border-danger">
                     <div class="card-header bg-transparent border-danger">
 
-                    <div class="word" style="font-size: 27px; color:red;">Статус: {{el['status']}}</div>
-                        </div>
-                {% elif el['status'] in ['Выдан'] %}
-                <div class="card border-secondary">
-                    <div class="card-header bg-transparent border-secondary">
-
-                       <div class="word" style="font-size: 27px; color:grey;">Статус: {{el['status']}}</div>
-                            </div>
-
-                {% else %}
-                <div class="card border-success">
-                    <div class="card-header bg-transparent border-success">
-
-                       <div class="word" style="font-size: 27px; color:green;">Статус: {{el['status']}}</div>
-                            </div>
-
-                        {% endif %}
-
-
-                    <pre class="word" style="font-size: 23px; "><b>{{t}}</b></pre>
-                    <pre class="word" style="font-size: 20px;  ">{{el['menus']}}</pre>
-
-
-                        {% if el['status'] in ['В работе'] %}
-                        <div class="card-body text-danger">
-                        <div class="star text-center">
-                            <i class="fa-regular fa-star"></i>
-                        </div>
-                        <div class="card-footer bg-transparent border-danger">
-                        {% elif el['status'] in ['Выдан'] %}
-                        <div class="card-body text-secondary">
-                        <div class="star text-center">
-                            <i class="fa-regular fa-star"></i>
-                        </div>
-                        <div class="card-footer bg-transparent border-secondary">
-                        {% else %}
-                        <div class="card-body text-success">
-                        <div class="star text-center">
-                            <i class="fa-regular fa-star"></i>
-                        </div>
-                        <div class="card-footer bg-transparent border-success">
-                        {% endif %}
-                        <h4> Информация о клиенте:</h4>
-                        <h5>{{el['client_info']}}</h5>
-                        <h4>Дата выдачи заказа:</h4>
-                        <h5>{{el['date']}}</h5>
-                        <h4>Итоговая сумма</h4>
-                        <h5>{{el['total']}} рублей</h5>
-                            <a class="btn btn-dark" href="/dashboard/edit/{{ el['id'] }}" role="button">Редактировать</a>
-                            <a class="btn btn-outline-danger" href="/dashboard/delete/{{ el['id'] }}" role="button">Удалить</a>
-                        </div>
+                        <div class="word" style="font-size: 27px; color:red;">Статус: {{el['status']}}</div>
                     </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-</div>
+                    {% elif el['status'] in ['Выдан'] %}
+                    <div class="card border-secondary">
+                        <div class="card-header bg-transparent border-secondary">
+
+                            <div class="word" style="font-size: 27px; color:grey;">Статус: {{el['status']}}</div>
+                        </div>
+
+                        {% else %}
+                        <div class="card border-success">
+                            <div class="card-header bg-transparent border-success">
+
+                                <div class="word" style="font-size: 27px; color:green;">Статус: {{el['status']}}</div>
+                            </div>
+
+                            {% endif %}
+
+
+                            <pre class="word" style="font-size: 23px; "><b>{{t}}</b></pre>
+                            <pre class="word" style="font-size: 20px;  ">{{el['menus']}}</pre>
+
+
+                            {% if el['status'] in ['В работе'] %}
+                            <div class="card-body text-danger">
+                                <div class="star text-center">
+                                    <i class="fa-regular fa-star"></i>
+                                </div>
+                                <div class="card-footer bg-transparent border-danger">
+                                    {% elif el['status'] in ['Выдан'] %}
+                                    <div class="card-body text-secondary">
+                                        <div class="star text-center">
+                                            <i class="fa-regular fa-star"></i>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-secondary">
+                                            {% else %}
+                                            <div class="card-body text-success">
+                                                <div class="star text-center">
+                                                    <i class="fa-regular fa-star"></i>
+                                                </div>
+                                                <div class="card-footer bg-transparent border-success">
+                                                    {% endif %}
+                                                    <h4> Информация о клиенте:</h4>
+                                                    <h5>{{el['client_info']}}</h5>
+                                                    <h4>Дата выдачи заказа:</h4>
+                                                    <h5>{{el['date']}}</h5>
+                                                    <h4>Итоговая сумма</h4>
+                                                    <h5>{{el['total']}} рублей</h5>
+                                                    <a class="btn btn-dark" href="/dashboard/edit/{{ el['id'] }}"
+                                                       role="button">Редактировать</a>
+                                                    <a class="btn btn-outline-danger"
+                                                       href="/dashboard/delete/{{ el['id'] }}" role="button">Удалить</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
 
 </section>
 {% endblock %}

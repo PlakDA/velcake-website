@@ -2,9 +2,12 @@
 
 {% block body %}
 
-<a class="btn btn-warning m-3" href="/cart/clear">Очистить предзаказ</a>
 {% if cart %}
+<a class="btn btn-warning m-3" href="/cart/clear">Очистить предзаказ</a>
 <a class="btn btn-success m-3" href="/orders/add">Создать заказ</a>
+{% else %}
+<button class="btn btn-warning m-3" disabled>Очистить предзаказ</button>
+<button class="btn btn-success m-3" disabled>Создать заказ</button>
 {% endif %}
 
 <table class="table table-striped">
