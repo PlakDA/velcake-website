@@ -255,7 +255,7 @@ def search(query):
 def additem():
     form = AddItemForm()
     if form.validate_on_submit():
-        requests.post('http://127.0.0.1:8080/api/orders', json={"status": form.status.data,
+        requests.post('http:// 127.0.0.1:8080/api/orders', json={"status": form.status.data,
                                                            "menus": ' '.join(map(str, session.get('cart'))),
                                                            "total": form.total.data,
                                                            "client_info": form.client_info.data,

@@ -30,6 +30,7 @@ class PhotoResource(Resource):
         session.commit()
         return jsonify({'successful': 'OK'})
 
+
 class PhotoListResource(Resource):
     def get(self):
         session = db_session.create_session()
@@ -41,9 +42,7 @@ class PhotoListResource(Resource):
                             for item in photos]})
 
     def post(self):
-        print(1)
         args = parser.parse_args()
-        print(1)
         session = db_session.create_session()
         photo = Gallery(
             img_path=args['img_path']
